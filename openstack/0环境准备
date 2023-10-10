@@ -1,0 +1,47 @@
+cd #控制节点
+1.网络配置
+#controller 需要两块网卡
+#本机两块网卡分别为enp0s3f0,enp0s3f1. 
+
+#Configure the first interface enp0s3f0 as the management interface:
+#手动配置或者使用dhcp都可以,建议手动配置,以防止重启之后ip变动
+
+IP address: 10.40.65.188
+Network mask: 255.255.255.0 (or /24)
+Default gateway: 10.40.65.254
+DNS: 8.8.8.8
+
+# 配置第二块网卡 enp0s3f1作为provider 接口, 不配置ip, 同时需要修改/etc/sysconfig/network-scripts/enp0s3f1 下列选项
+DEVICE=INTERFACE_NAME
+TYPE=Ethernet
+ONBOOT="yes"
+BOOTPROTO="none"
+
+2 修改hostname
+hostnamectl set-hostname controller
+
+#重启系统使配置生效
+
+2 yum install -y git
+git clone https://gitee.com/leowuqiong/openstack-install.git
+
+3 修改hostname并免密登录
+#参考config-host.sh
+
+
+
+#计算节点
+1.网络配置
+compute双网卡网卡配置
+#本机两块网卡分别为enp0s3f0,enp0s3f1. 
+
+#Configure the first interface enp0s3f0 as the management interface:
+#手动配置或者使用dhcp都可以,建议手动配置,以防止重启之后ip变动
+
+
+# 配置第二块网卡 enp0s3f1作为provider 接口, 不配置ip, 同时需要修改/etc/sysconfig/network-scripts/enp0s3f1 下列选项
+DEVICE=INTERFACE_NAME
+TYPE=Ethernet
+ONBOOT="yes"
+BOOTPROTO="none"
+

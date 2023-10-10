@@ -1,0 +1,31 @@
+#虚拟机支持冷迁移配置
+#特点: 
+#无需共享存储
+#无法制定迁移目标节点, 系统自动安排
+#配置:
+#所有计算节点
+#1
+usermod -s /bin/bash nova
+
+#2 选择一个计算节点生成ssh密钥对并将密钥对并copy到所有计算节点
+su - nova
+ssh-keygen -t rsa
+cd /var/lib/nova/.ssh
+cp -fa id_rsa.pub authorized_keys
+
+cat > /var/lib/nova/.ssh/config <<EOF
+Host *
+StrictHostKeyChecking no
+EOF
+
+exit
+
+#3 将.ssh文件夹copy到其他计算节点
+#scp -r /var/lib/nova/.ssh nova@compute:/var/lib/nova/
+ansible compute -m shell -a "usermod -s /bin/bash nova"
+ansible compute -m copy  -a "src=/var/lib/nova/.ssh dest=/var/lib/nova/ owner=nova group=nova"
+ansible compute -m shell -a "chmod 0600 /var/lib/nova/.ssh/id_rsa"
+
+
+
+

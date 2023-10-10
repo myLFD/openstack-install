@@ -1,0 +1,28 @@
+[cloud-openstack-ussuri]
+name=Loongnix-Server Linux cloud buildrequires
+baseurl=http://pkg.loongnix.cn:8080/loongnix-server/8.3/cloud/loongarch64/release/openstack-ussuri/
+gpgcheck=0
+enabled=1
+priority=1
+[virt]
+name=Loongnix server 20 - virt
+baseurl=http://pkg.loongnix.cn:8080/loongnix-server/8.3/virt/loongarch64/release/
+gpgcheck=0
+enabled=1
+[epel]
+name=Loongnix server epel
+baseurl=http://pkg.loongnix.cn:8080/loongnix-server/8.3/epel/loongarch64/release/Everything/
+gpgcheck=0
+enabled=1
+[message]
+name=loongnix server messaging
+baseurl=http://pkg.loongnix.cn:8080/loongnix-server/8.3/messaging/loongarch64/release/
+gpgcheck=0
+enabled=1
+
+[store]
+name=ceph 14
+baseurl=http://pkg.loongnix.cn:8080/loongnix-server/8.3/storage/loongarch64/release/ceph-nautilus/
+gpgcheck=0
+enabled=1
+priority=1

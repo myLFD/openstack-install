@@ -1,0 +1,265 @@
+Commands:
+  access token create  Create an access token
+  aggregate add host  Add host to aggregate
+  aggregate create  Create a new aggregate
+  aggregate delete  Delete an existing aggregate
+  aggregate list  List all aggregates
+  aggregate remove host  Remove host from aggregate
+  aggregate set  Set aggregate properties
+  aggregate show  Display aggregate details
+  availability zone list  List availability zones and their status
+  backup create  Create new backup
+  backup delete  Delete backup(s)
+  backup list    List backups
+  backup restore  Restore backup
+  backup show    Display backup details
+  catalog list   List services in the service catalog
+  catalog show   Display service catalog details
+  command list   List recognized commands by group
+  complete       print bash completion command
+  compute agent create  Create compute agent command
+  compute agent delete  Delete compute agent command
+  compute agent list  List compute agent command
+  compute agent set  Set compute agent command
+  compute service delete  Delete service command
+  compute service list  List service command
+  compute service set  Set service command
+  configuration show  Display configuration details
+  console log show  Show server's console output
+  console url show  Show server's remote console URL
+  consumer create  Create new consumer
+  consumer delete  Delete consumer
+  consumer list  List consumers
+  consumer set   Set consumer properties
+  consumer show  Display consumer details
+  container create  Create new container
+  container delete  Delete container
+  container list  List containers
+  container save  Save container contents locally
+  container set  Set container properties
+  container show  Display container details
+  container unset  Unset container properties
+  credential create  Create credential command
+  credential delete  Delete credential command
+  credential list  List credential command
+  credential set  Set credential command
+  credential show  Show credential command
+  domain create  Create new domain
+  domain delete  Delete domain
+  domain list    List domains
+  domain set     Set domain properties
+  domain show    Display domain details
+  ec2 credentials create  Create EC2 credentials
+  ec2 credentials delete  Delete EC2 credentials
+  ec2 credentials list  List EC2 credentials
+  ec2 credentials show  Display EC2 credentials details
+  endpoint create  Create new endpoint
+  endpoint delete  Delete endpoint
+  endpoint list  List endpoints
+  endpoint set   Set endpoint properties
+  endpoint show  Display endpoint details
+  extension list  List API extensions
+  federation domain list  List accessible domains
+  federation project list  List accessible projects
+  federation protocol create  Create new federation protocol
+  federation protocol delete  Delete federation protocol
+  federation protocol list  List federation protocols
+  federation protocol set  Set federation protocol properties
+  federation protocol show  Display federation protocol details
+  flavor create  Create new flavor
+  flavor delete  Delete flavor
+  flavor list    List flavors
+  flavor set     Set flavor properties
+  flavor show    Display flavor details
+  flavor unset   Unset flavor properties
+  group add user  Add user to group
+  group contains user  Check user membership in group
+  group create   Create new group
+  group delete   Delete group(s)
+  group list     List groups
+  group remove user  Remove user from group
+  group set      Set group properties
+  group show     Display group details
+  help           print detailed help for another command
+  host list      List host command
+  host show      Show host command
+  hypervisor list  List hypervisors
+  hypervisor show  Display hypervisor details
+  hypervisor stats show  Display hypervisor stats details
+  identity provider create  Create new identity provider
+  identity provider delete  Delete identity provider
+  identity provider list  List identity providers
+  identity provider set  Set identity provider properties
+  identity provider show  Display identity provider details
+  image add project  Associate project with image
+  image create   Create/upload an image
+  image delete   Delete image(s)
+  image list     List available images
+  image remove project  Disassociate project with image
+  image save     Save an image locally
+  image set      Set image properties
+  image show     Display image details
+  ip fixed add   Add fixed IP address to server
+  ip fixed remove  Remove fixed IP address from server
+  ip floating add  Add floating IP address to server
+  ip floating create  Create new floating IP address
+  ip floating delete  Delete floating IP
+  ip floating list  List floating IP(s)
+  ip floating pool list  List pools of floating IP addresses
+  ip floating remove  Remove floating IP address from server
+  ip floating show  Show floating IP details
+  keypair create  Create new public key
+  keypair delete  Delete public key
+  keypair list   List public key fingerprints
+  keypair show   Display public key details
+  limits show    Show compute and block storage limits
+  mapping create  Create new mapping
+  mapping delete  Delete mapping
+  mapping list   List mappings
+  mapping set    Set mapping properties
+  mapping show   Display mapping details
+  module list    List module versions
+  network create  Create new network
+  network delete  Delete network(s)
+  network list   List networks
+  network set    Set network properties
+  network show   Show network details
+  object create  Upload object to container
+  object delete  Delete object from container
+  object list    List objects
+  object save    Save object locally
+  object set     Set object properties
+  object show    Display object details
+  object store account set  Set account properties
+  object store account show  Display account details
+  object store account unset  Unset account properties
+  object unset   Unset object properties
+  policy create  Create new policy
+  policy delete  Delete policy
+  policy list    List policies
+  policy set     Set policy properties
+  policy show    Display policy details
+  port delete    Delete port(s)
+  port show      Display port details
+  project create  Create new project
+  project delete  Delete project(s)
+  project list   List projects
+  project set    Set project properties
+  project show   Display project details
+  quota set      Set quotas for project or class
+  quota show     Show quotas for project or class
+  region create  Create new region
+  region delete  Delete region
+  region list    List regions
+  region set     Set region properties
+  region show    Display region details
+  request token authorize  Authorize a request token
+  request token create  Create a request token
+  role add       Adds a role to a user or group on a domain or project
+  role assignment list  List role assignments
+  role create    Create new role
+  role delete    Delete role(s)
+  role list      List roles
+  role remove    Remove role from domain/project : user/group
+  role set       Set role properties
+  role show      Display role details
+  router create  Create a new router
+  router delete  Delete router(s)
+  router list    List routers
+  router set     Set router properties
+  router show    Display router details
+  security group create  Create a new security group
+  security group delete  Delete a security group
+  security group list  List security groups
+  security group rule create  Create a new security group rule
+  security group rule delete  Delete a security group rule
+  security group rule list  List security group rules
+  security group rule show  Display security group rule details
+  security group set  Set security group properties
+  security group show  Display security group details
+  server add security group  Add security group to server
+  server add volume  Add volume to server
+  server create  Create a new server
+  server delete  Delete server(s)
+  server dump create  Create a dump file in server(s)
+  server image create  Create a new disk image from a running server
+  server list    List servers
+  server lock    Lock server(s). A non-admin user will not be able to execute actions
+  server migrate  Migrate server to different host
+  server pause   Pause server(s)
+  server reboot  Perform a hard or soft server reboot
+  server rebuild  Rebuild server
+  server remove security group  Remove security group from server
+  server remove volume  Remove volume from server
+  server rescue  Put server in rescue mode
+  server resize  Scale server to a new flavor
+  server resume  Resume server(s)
+  server set     Set server properties
+  server shelve  Shelve server(s)
+  server show    Show server details
+  server ssh     Ssh to server
+  server start   Start server(s).
+  server stop    Stop server(s).
+  server suspend  Suspend server(s)
+  server unlock  Unlock server(s)
+  server unpause  Unpause server(s)
+  server unrescue  Restore server from rescue mode
+  server unset   Unset server properties
+  server unshelve  Unshelve server(s)
+  service create  Create new service
+  service delete  Delete service
+  service list   List services
+  service provider create  Create new service provider
+  service provider delete  Delete service provider
+  service provider list  List service providers
+  service provider set  Set service provider properties
+  service provider show  Display service provider details
+  service set    Set service properties
+  service show   Display service details
+  snapshot create  Create new snapshot
+  snapshot delete  Delete volume snapshot(s)
+  snapshot list  List snapshots
+  snapshot set   Set snapshot properties
+  snapshot show  Display snapshot details
+  snapshot unset  Unset snapshot properties
+  subnet delete  Delete subnet
+  subnet list    List subnets
+  subnet pool delete  Delete subnet pool
+  subnet pool list  List subnet pools
+  subnet pool show  Display subnet pool details
+  subnet show    Show subnet details
+  token issue    Issue new token
+  token revoke   Revoke existing token
+  trust create   Create new trust
+  trust delete   Delete trust(s)
+  trust list     List trusts
+  trust show     Display trust details
+  usage list     List resource usage per project
+  usage show     Show resource usage for a single project
+  user create    Create new user
+  user delete    Delete user(s)
+  user list      List users
+  user password set  Change current user password
+  user set       Set user properties
+  user show      Display user details
+  volume create  Create new volume
+  volume delete  Delete volume(s)
+  volume list    List volumes
+  volume qos associate  Associate a QoS specification to a volume type
+  volume qos create  Create new QoS specification
+  volume qos delete  Delete QoS specification
+  volume qos disassociate  Disassociate a QoS specification from a volume type
+  volume qos list  List QoS specifications
+  volume qos set  Set QoS specification properties
+  volume qos show  Display QoS specification details
+  volume qos unset  Unset QoS specification properties
+  volume set     Set volume properties
+  volume show    Display volume details
+  volume type create  Create new volume type
+  volume type delete  Delete volume type
+  volume type list  List volume types
+  volume type set  Set volume type properties
+  volume type show  Display volume type details
+  volume type unset  Unset volume type properties
+  volume unset   Unset volume properties
+

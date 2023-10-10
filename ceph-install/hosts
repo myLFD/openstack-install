@@ -1,0 +1,7 @@
+[ceph]
+controller1
+controller2
+controller3
+[newosd]
+[newosd:vars]
+dev=/dev/sda

@@ -1,0 +1,86 @@
+1 新装环境
+1)服务器A 192.168.201.211 keystone, horizon;  
+服务器B 192.168.201.5 使用A的keystone和horizon
+正常安装A和B的控制节点, 其中控制节点B的安装脚本里RegionOne都替换成RegionTwo
+export AIP=192.168.201.211
+export BIP=192.168.201.5
+2)安装完成后A节点加入B的endpoint
+keystone-manage bootstrap --bootstrap-password loongson \
+  --bootstrap-admin-url http://$AIP:5000/v3/ \
+  --bootstrap-internal-url http://$AIP:5000/v3/ \
+  --bootstrap-public-url http://$AIP:5000/v3/ \
+  --bootstrap-region-id RegionTwo
+
+openstack endpoint create --region RegionTwo image public http://$BIP:9292
+openstack endpoint create --region RegionTwo image internal http://$BIP:9292
+openstack endpoint create --region RegionTwo image admin http://$BIP:9292
+
+openstack endpoint create --region RegionTwo   placement public http://$BIP:8778
+openstack endpoint create --region RegionTwo   placement internal http://$BIP:8778
+openstack endpoint create --region RegionTwo   placement admin http://$BIP:8778
+
+openstack endpoint create --region RegionTwo   compute public http://$BIP:8774/v2.1
+openstack endpoint create --region RegionTwo   compute internal http://$BIP:8774/v2.1
+openstack endpoint create --region RegionTwo   compute admin http://$BIP:8774/v2.1
+
+openstack endpoint create --region RegionTwo   network public http://$BIP:9696
+openstack endpoint create --region RegionTwo   network internal http://$BIP:9696
+openstack endpoint create --region RegionTwo   network admin http://$BIP:9696
+
+openstack endpoint create --region RegionTwo   volumev2 public http://$BIP:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionTwo   volumev2 internal http://$BIP:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionTwo   volumev2 admin http://$BIP:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionTwo   volumev3 public http://$BIP:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionTwo   volumev3 internal http://$BIP:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionTwo   volumev3 admin http://$BIP:8776/v3/%\(project_id\)s
+
+3) B节点关于鉴权的都改为指向A节点
+
+openstack-config --set /etc/nova/nova.conf keystone_authtoken www_authenticate_uri http://$AIP:5000
+openstack-config --set /etc/nova/nova.conf keystone_authtoken auth_url http://$AIP:5000
+openstack-config --set /etc/nova/nova.conf neutron auth_url http://$AIP:5000
+openstack-config --set /etc/nova/nova.conf placement auth_url http://$AIP:5000/v3
+openstack-config --set /etc/neutron/neutron.conf keystone_authtoken www_authenticate_uri http://$AIP:5000
+openstack-config --set /etc/neutron/neutron.conf keystone_authtoken auth_url http://$AIP:5000
+openstack-config --set /etc/neutron/neutron.conf nova auth_url http://$AIP:5000
+openstack-config --set /etc/placement/placement.conf keystone_authtoken auth_url http://$AIP:5000/v3
+openstack-config --set /etc/glance/glance-api.conf keystone_authtoken www_authenticate_uri http://$AIP:5000
+openstack-config --set /etc/glance/glance-api.conf keystone_authtoken auth_url http://$AIP:5000
+openstack-config --set /etc/cinder/cinder.conf keystone_authtoken www_authenticate_uri  http://$AIP:5000
+openstack-config --set /etc/cinder/cinder.conf keystone_authtoken auth_url  http://$AIP:500
+
+4)将A节点的发文件同步到B节点
+  scp credential-keys/* root@192.168.201.5:/etc/keystone/credential-keys
+  scp fernet-keys/* root@192.168.201.5:/etc/keystone/fernet-keys
+
+
+5)重启A, B节点, 重启所有服务
+
+
+2 现有环境改造
+服务器A 192.168.201.211   服务器B 192.168.201.5 都正常安装, 使用的RegionOne
+改为使用A的horizon和keystone;
+
+1) 将B的配置文件里RegionOne都改为RegionTwo
+openstack-config --set /etc/nova/nova.conf cinder os_region_name  RegionOne
+openstack-config --set /etc/neutron/neutron.conf nova region_name RegionOne
+openstack-config --set /etc/nova/nova.conf placement region_name RegionOne
+openstack-config --set /etc/nova/nova.conf neutron region_name RegionOne
+openstack-config --set /etc/nova/nova.conf placement region_name RegionOne
+openstack-config --set /etc/nova/nova.conf neutron region_name RegionOne
+openstack-config --set /etc/nova/nova.conf cinder os_region_name RegionOne
+openstack-config --set /etc/nova/nova.conf neutron region_name RegionOne
+openstack-config --set /etc/nova/nova.conf placement region_name RegionOne
+cinder.sh:openstack-config --set /etc/nova/nova.conf cinder os_region_name  RegionOne
+
+2)修改B的数据库
+导出数据库：
+mysqldump -ukeystone -ploongson keystone > keystone.sql
+
+把keystone.sql文件中所有的RegionOne改成RegionTwo
+
+把修改后的keystone.sql文件导入数据库：
+
+mysql -ukeystone -ploongson keystone < keystone.sql
+
+执行1的2),3),4),5)步骤.

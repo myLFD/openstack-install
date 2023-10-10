@@ -1,0 +1,120 @@
+1  #删除ip
+nova list --all-tenants|grep 192.168.100.186|cut -d "|"  -f 2| xargs nova delete
+2  #qcow2转为raw
+qemu-img convert -f qcow2 -O raw mips64el.qcow2 mips64el.raw
+
+3 #创建虚拟机
+openstack server create --flavor  859716e4-2d2c-4d73-99fc-8fafb5196ee4    \
+  --image efebd36a-0516-44a4-ba0c-6b546be4284d  --nic net-id=6c1c2313-beb9-4051-96a7-b2102cb7aa64  --availability-zone nova:compute4-3:compute4-3 demo2
+
+#创建浮动ip并绑定到虚拟机
+openstack floating ip create 02fe3912-8e7f-431a-8d72-2ceed54c155d
+openstack server add floating ip test6 10.40.73.17
+
+4 创建flavor, 上传image
+#创建falvor
+openstack flavor create small --ram 4096 --disk 60 --vcpu 4
+ #上传image
+glance image-create --name "loongnix-server" --file mips64el.raw --disk-format raw --container-format bare --visibility=public  --property hw_qemu_guest_agent=yes
+
+5  创建共有网络
+#创建公有flat网络
+openstack network create --external --provider-physical-network provider  --provider-network-type flat public-flat
+ #创建flat的子网
+openstack subnet create --subnet-range 10.40.73.0/24 --gateway 10.40.73.254 \
+  --network public-flat --allocation-pool start=10.40.73.1,end=10.40.73.100 \
+  --dns-nameserver 202.106.0.20 public-flat-sub1
+
+6 创建私有网络
+openstack network create --share private
+openstack subnet create vxlan --subnet-range 192.168.100.0/24 --gateway 192.168.100.254 --dns-nameserver  202.106.0.20 --network --share private
+
+#创建路由
+openstack router create ROUTER
+openstack router set ROUTER --external-gateway public-flat --fixed-ip subnet=public-flat-sub1,ip-address=10.40.73.100 --enable-snat
+openstack router add subnet ROUTER vxlan
+
+7  #查询配置  
+egrep -v "^#|^$" 
+
+8 #测试网速
+yum install -y python3-pip.noarch
+pip3 install speedtest-cli
+
+9 查询novnc url
+#openstack console url show id
+
+
+10 #qos配置
+controller
+openstack-config --set /etc/neutron/neutron.conf DEFAULT service_plugins router,neutron.services.qos.qos_plugin.QoSPlugin
+openstack-config --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security, qos
+openstack-config --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini agent extensions  qos
+
+#ovs
+#openstack-config --set /etc/neutron/plugins/ml2/openvswitch_agent.ini agent extensions  qos
+compute
+openstack-config --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini agent extensions  qos,fip_qos
+
+#ovs
+#openstack-config --set /etc/neutron/plugins/ml2/openvswitch_agent.ini agent extensions  qos,fip_qos
+
+#更改配置后需要重新启动neutron-linux-bridge 和openstack-nova-compute, 只重启linux bridge是不生效的
+systemctl restart neutron-linuxbridge-agent.service
+systemctl restart openstack-nova-compute
+
+
+#创建qos限制网速, 下面操作都不需要重启
+openstack network qos policy create bw-limiter
+openstack network qos rule create --type bandwidth-limit --max-kbps 10240   --egress bw-limiter
+openstack network qos rule create --type bandwidth-limit --max-kbps 10240   --ingress bw-limiter
+#apply到端口
+openstack port set --qos-policy bw-limiter     88101e57-76fa-4d12-b0e0-4fc7634b874a
+#apply到浮动ip
+openstack floating ip set --qos-policy bw-limiter d0ed7491-3eb7-4c4f-a0f0-df04f10a067c
+#取消qos
+openstack floating ip unset --qos-policy d0ed7491-3eb7-4c4f-a0f0-df04f10a067c
+#apply到网络
+openstack network set --qos-policy bw-limiter private
+取消网络的qos
+openstack network set --no-qos-policy private
+
+openstack network qos policy  list
+openstack network qos rule list bw-limiter
+
+
+11# 统计一段时间内的使用数据
+nova usage-list
+List usage data for all tenants.
+Optional arguments:
+  --start <start>  Usage range start date ex 2012-01-20. (default: 4 weeks
+                   ago)
+  --end <end>      Usage range end date, ex 2012-01-20. (default: tomorrow)
+
+加上当前时间, 可以查询每个project的server的数量
+nova usage-list --start 2022-09-10
+
+
+12 主机驱逐
+liva迁移是模糊匹配
+nova host-evacuate-live compute10 --block-migrate 
+
+host-evacuate 分布式存储下是迁移, 本地存储就是重建了
+nova host-evacuate
+
+13 禁止虚拟机访问服务器, 在每一台服务器上添加iptables规制
+#添加屏蔽IP
+#禁止此IP访问服务器
+iptables -I INPUT -s 1.2.3.4 -j DROP
+如果要封某个网段：
+iptables -I INPUT -s 1.2.3.0/24 -j DROP
+
+14 增加vlan支持
+openstack-config --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vlan network_vlan_ranges provider:3001:4000
+
+15 反向代理
+ssh -NfR 8902:localhost:22 root@111.207.111.194 -p 11831
+登录
+ssh root@localhost -p 8902
+
+

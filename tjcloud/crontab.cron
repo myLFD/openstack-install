@@ -1,0 +1,4 @@
+*/2 * * * * /root/openstack-install/tjcloud/status-check.sh > /var/log/status.log
+@reboot /root/openstack-install/tjcloud/reboot.sh >> /var/log/restatus.log
+*/5 * * * * /root/openstack-install/tjcloud/evacuate-node.sh >> /var/log/evacuate-node.log
+*/30 * * * * /root/openstack-install/tjcloud/clean-cache.sh >> /var/log/clean-cache.log

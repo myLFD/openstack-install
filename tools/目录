@@ -1,0 +1,12 @@
+虚拟机冷迁移: 虚拟机迁移配置
+虚拟机热迁移: live-migration.sh
+数据库备份: back_and_restore_mariadb.sh
+接入ceph: ceph-openstack.sh
+AZ操作: create_and_delete_az.sh
+创建本地源: create-repo.sh
+linuxbridge-ovs切换: ovs-vs-linuxbridge.sh
+使用分布式路由:changeOvsToDvr.sh
+多region配置:mutiRegion配置
+删除计算节点:delete_compute_node.sh
+开启spice: enable-spice.sh
+做raid和使用本地存储:raid.sh

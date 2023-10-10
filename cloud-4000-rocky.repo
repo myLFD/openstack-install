@@ -1,0 +1,11 @@
+[cloud-openstack-rocky]
+name=Loongnix-Server Linux cloud buildrequires
+baseurl=http://ftp.loongnix.org/os/loongnix-server/1.7/cloud/mips64el/openstack-rocky/
+gpgcheck=0
+enabled=1
+priority=1
+[epel]
+name=Loongnix server epel
+baseurl=http://ftp.loongnix.org/os/loongnix-server/1.7/epel/mips64el/
+gpgcheck=0
+enabled=1

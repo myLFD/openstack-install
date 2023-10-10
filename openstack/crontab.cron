@@ -1,0 +1,3 @@
+0 */1 * * * /root/openstack-install/openstack/status-check.sh > /var/log/status.log
+@reboot /root/openstack-install/openstack/status-check.sh > /var/log/restatus.log
+

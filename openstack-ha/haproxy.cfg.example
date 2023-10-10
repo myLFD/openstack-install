@@ -1,0 +1,143 @@
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+# frontend main 
+#    bind *:8080
+#    mode http
+#    default_backend webservers
+# backend webservers
+#     balance roundrobin
+#     # 后端业务服务器清单
+#     server web1 192.168.200.224:80 check rise 2 fall 1 weight 2
+#     server web2 192.168.200.70:80 check rise 2 fall 1 weight 2
+listen http-server
+    bind 0.0.0.0:8080
+    balance roundrobin
+    option tcpka
+    option httpchk
+    option tcplog
+    server controller1 192.168.200.224:80 check port 80 inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:80 check port 80 inter 2000 rise 2 fall 5
+listen stats
+    mode http
+    bind 0.0.0.0:8090                # 监控网站地址
+    option httpchk GET /info.txt     # 后端真实主机监控检查方式
+    stats enable
+    stats refresh 60s
+    stats hide-version
+    stats uri   /mornitor               # 监控网站 URI
+    stats realm Haproxy\ allen
+    stats auth  admin:admin
+    stats admin if TRUE
+listen mariadb
+    bind *:3307
+    balance roundrobin
+    mode tcp
+    option tcpka
+    option mysql-check user haproxy
+    server controller1 192.168.200.224:3307 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:3307 check  inter 2000 rise 2 fall 5
+
+listen rabbitmq
+    bind *:5673
+    balance leastconn
+    option tcplog
+    timeout client 3h
+    timeout server 3h
+    mode tcp
+    server controller1 192.168.200.224:5672 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:5672 check  inter 2000 rise 2 fall 5
+listen rabbitmqAdmin
+    bind *:15673
+    server controller1 192.168.200.224:15672 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:15672 check  inter 2000 rise 2 fall 5
+
+
+listen keystone
+    bind *:5001
+    balance source
+    option tcpka
+    option httpchk
+    option tcplog
+    server controller1 192.168.200.224:5001 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:5001 check  inter 2000 rise 2 fall 5
+listen glance-api
+    bind *:9293
+    balance source
+    option tcpka
+    option httpchk
+    option tcplog
+    server controller1 192.168.200.224:9292 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:9292 check  inter 2000 rise 2 fall 5
+
+listen nova-api
+    bind *:8784
+    balance source
+    option tcpka
+    option httpchk
+    option tcplog
+    server controller1 192.168.200.224:8774 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:8774 check  inter 2000 rise 2 fall 5
+listen nova_novncproxy
+    bind *:6090
+    balance source
+    option tcpka
+    option tcplog
+    server controller1 192.168.200.224:6080 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:6080 check  inter 2000 rise 2 fall 5
+
+listen nova_placement
+    bind *:8789
+    balance source
+    option tcpka
+    option tcplog
+    server controller1 192.168.200.224:8778 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:8778 check  inter 2000 rise 2 fall 5
+
+listen neutron
+    bind *:9606
+    balance source
+    option tcpka
+    option tcplog
+    server controller1 192.168.200.224:9696 check  inter 2000 rise 2 fall 5
+    server controller2 192.168.200.70:9696 check  inter 2000 rise 2 fall 5

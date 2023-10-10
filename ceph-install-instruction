@@ -1,0 +1,74 @@
+ 
+1 yum install ceph-ansile -y
+2 
+echo "192.168.100.201  node1" >> /etc/hosts
+echo "192.168.100.155 node2" >> /etc/hosts
+echo "192.168.100.26 node3" >> /etc/hosts
+3 修改/etc/ansible/hosts
+cat > /etc/ansible/hosts <<eof
+ceph1 ansible_ssh_host=192.168.100.201 ansible_ssh_user="root" ansible_ssh_pass="loongson" ansible_ssh_port=22 name=node1
+ceph2 ansible_ssh_host=192.168.100.155 ansible_ssh_user="root" ansible_ssh_pass="loongson" ansible_ssh_port=22 name=node2
+ceph3 ansible_ssh_host=192.168.100.26 ansible_ssh_user="root" ansible_ssh_pass="loongson" ansible_ssh_port=22 name=node3
+[cephs]
+ceph1
+ceph2
+ceph3
+[mons]
+node1
+node2
+node3
+[osds]
+node1
+node2
+node3
+[mgrs]
+node1
+node2
+node3
+eof
+
+4
+# 生成公私钥匙 ssh-keygen # 免密推送
+修改配置文件 vi /etc/ansible/ansible.cfg，将如下行注释取消
+host_key_checking = False
+ansible cephs -m authorized_key -a "user=root state=present key='{{ lookup('file', '/root/.ssh/id_rsa.pub') }}'"
+ansible cephs -m shell -a "hostnamectl set-hostname {{ name }}"
+5 vim init.sh
+
+echo "192.168.100.201  node1" >> /etc/hosts
+echo "192.168.100.155 node2" >> /etc/hosts
+echo "192.168.100.26 node3" >> /etc/hosts
+
+
+sed -i 's/2.Loongnix-Server.pool.ntp.org/ntp1.aliyun.com/g' /etc/chrony.conf
+systemctl restart chronyd
+#关闭防火墙
+systemctl stop firewalld
+setenforce 0
+sestatus
+
+
+6
+ansible cephs -m script -a "/root/init.sh"
+7
+ansible-playbook site.yml
+
+
+8 ceph config set mon auth_allow_insecure_global_id_reclaim false
+
+否则会有warnning
+
+默认配置文件
+通用配置
+roles/ceph-defaults/main.yml
+ntp_daemon_type: chronyd
+
+
+osd配置项
+roles/ceph-defaults/vars/main.yml
+---
+ceph_osd_pool_default_size: 3
+ceph_osd_pool_default_min_size: 2
+ceph_osd_pool_default_pg_num: 8
+ceph_osd_pool_default_crush_rule: -1
+ceph_osd_pool_default_crush_rule_name: "replicated_rule"

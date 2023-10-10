@@ -1,0 +1,33 @@
+rbd ls vms
+
+ceph df
+ceph osd df
+ceph osd tree
+ceph osd lspools
+ceph osd pool ls detail
+
+#查看集群内POOL的使用情况
+rados df
+
+设置副本类型POOL的对象副本数,可以使用以下命令:
+ceph osd pool set {pool-name} size {num-replicas}
+
+查看认证列表
+ceph auth list
+
+删除pool内数据
+rbd rm vms/b88d4689-b151-4a9b-965a-167df8c2a965_disk
+导出虚拟机数据
+rbd export -p vms c1b9f9d6-aef1-4e3d-94a5-0692750bcb95_disk  vm.qcow2
+创建虚拟机快照
+rbd snap create vms/534b55de-ba9c-4096-8b5d-ace46a6adac8_disk@backup1
+查看虚拟机快照
+rbd snap list vms/534b55de-ba9c-4096-8b5d-ace46a6adac8_disk
+删除所有虚拟机快照
+rbd snap purge <pool-name>/<image-name>
+删除指定虚拟机快照
+rbd snap rm vms/534b55de-ba9c-4096-8b5d-ace46a6adac8_disk@backup1
+使用一个虚拟机的数据覆盖另一个虚拟机，先删除原有虚拟机数据
+rbd rm vms/8a5fecc6-dc21-49c3-b6f6-dc824647bb33_disk
+rbd cp vms/534b55de-ba9c-4096-8b5d-ace46a6adac8_disk vms/8a5fecc6-dc21-49c3-b6f6-dc824647bb33_disk
+

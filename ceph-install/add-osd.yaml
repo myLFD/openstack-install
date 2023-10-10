@@ -1,0 +1,49 @@
+---
+- name: pre-config
+  hosts: newosd
+  tasks:
+    - name: disable firewalld
+      service: 
+        name: firewalld
+        state: stopped
+        enabled: false
+    - name: disable selinux
+      shell: 
+        cmd: | 
+          ceph  -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+        warn: false
+    - name: check selinux
+      shell: setenforce 0
+      ignore_errors: True
+      register: ret
+    - name: selinux status
+      debug: var=ret.stderr_lines verbosity=0 
+      ignore_errors: yes
+    - name: install chrony
+      yum: name=chrony state=present
+    - name: config chrony
+      shell: 
+        cmd: |
+          sed -i '/^pool/d' /etc/chrony.conf
+          sed -i '/^server/d' /etc/chrony.conf
+          echo "pool ntp.aliyun.com iburst" >> /etc/chrony.conf
+        warn: false
+    - name: restart chrony
+      service: name="chronyd" state=restarted 
+    - name: check chronyc
+      shell: chronyc sources
+      ignore_errors: True
+      register: ret
+    - name: chronyc status
+      debug: var=ret verbosity=0
+      ignore_errors: yes
+    - name: install ceph osd
+      yum: name=ceph-osd state=present
+    - name: synchronize ceph config file
+      synchronize: src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/
+    - name: synchronize ceph config file
+      synchronize: src=/var/lib/ceph/bootstrap-osd/ceph.keyring dest=/var/lib/ceph/bootstrap-osd/
+    - name: synchronize ceph config file
+      synchronize: src=/etc/ceph/ceph.conf dest=/etc/ceph/
+    - name: bind storage to osd
+      shell: ceph-volume lvm create --data {{dev}}
